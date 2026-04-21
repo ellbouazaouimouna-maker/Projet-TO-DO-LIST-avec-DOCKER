@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma To-Do List </title>
+    <style>
+        /* --- VARIABLES DE COULEURS --- */
+        :root {
+            --bg-color: #f9f9f9;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --primary-color: #2c7a54;
+            --border-color: #eee;
+            --accent-color: #f1c40f;
+        }
+
+        /*  MODE SOMBRE --- */
+        .dark-theme {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #f1f1f1;
+            --primary-color: #4eb382;
+            --border-color: #444;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* --- CÉLÉBRATION --- */
+        #congrats-msg {
+            display: none;
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* --- STATISTIQUES --- */
+        .stats-container {
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .progress-bar-bg {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        #progress-bar-fill {
+            background: var(--primary-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        #stats-text {
+            font-size: 0.9rem;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* --- FORMULAIRE --- */
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .options-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        #add-button {
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            margin-top: 5px;
+        }
+
+        #add-button:hover { opacity: 0.9; }
+
+        /* --- FILTRES --- */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            border-top: 2px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        /* --- LISTE DES TÂCHES --- */
+        #task-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .task {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task.important {
+            background-color: rgba(241, 196, 15, 0.1);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .task.completed .text-content {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .task-info { flex-grow: 1; }
+        .text-content { font-weight: 500; cursor: pointer; }
+
+        .date-recur-info {
+            display: block;
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .category-tag {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .star-button {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: #ccc;
+            padding: 0;
+            width: auto;
+        }
+
+        .actions { display: flex; gap: 5px; }
+
+        .actions button {
+            width: 35px; height: 35px; padding: 0;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; background: none;
+        }
+
+        #theme-toggle {
+            width: 45px; height: 45px; background: none; border: none;
+            font-size: 1.5rem; cursor: pointer; padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>To-Do List</h1>
+            <button id="theme-toggle" title="Changer de mode">🌙</button>
+        </header>
+
+        <div id="congrats-msg">🎉 Félicitations ! vous avez fini toutes les tache </div>
+
+        <div class="stats-container">
+            <div class="progress-bar-bg">
+                <div id="progress-bar-fill"></div>
+            </div>
+            <p id="stats-text">0 tâche terminée sur 0</p>
+        </div>
+
+        <div class="form-section">
+            <input type="text" id="new-task" placeholder="Qu'avez-vous à faire ?">
+            <div class="options-row">
+                <input type="datetime-local" id="task-date">
+                <select id="task-category">
+                    <option value="Personnel">Personnel</option>
+                    <option value="Travail">Travail</option>
+                    <option value="Études">Études</option>
+                    <option value="Loisirs">Loisirs</option>
+                </select>
+            </div>
+            <select id="task-recurrence">
+                <option value="none">Une seule fois</option>
+                <option value="hourly">Toutes les heures</option>
+                <option value="4hours">Toutes les 4 heures</option>
+                <option value="daily">Chaque jour</option>
+                <option value="weekly">Chaque semaine</option>
+                <option value="monthly">Chaque mois</option>
+                <option value="yearly">Chaque année</option>
+            </select>
+            <button id="add-button">Ajouter la tâche</button>
+        </div>
+        
+        <div class="filters">
+            <input type="text" id="search" placeholder="Rechercher une tâche...">
+            <select id="filter-category">
+                <option value="all">Tous</option>
+                <option value="Personnel">Personnel</option>
+                <option value="Travail">Travail</option>
+                <option value="Études">Études</option>
+                <option value="Loisirs">Loisirs</option>
+            </select>
+        </div>
+
+        <ul id="task-list"></ul>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
